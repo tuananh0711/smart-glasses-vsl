@@ -37,7 +37,3 @@ supermarket-dashboard/
 temp1.txt
 temp_docx.txt
 
-# File tài liệu báo cáo (Word, PDF)
-*.pdf
-*.doc
-*.docx
