@@ -1,0 +1,402 @@
+BỘ CÔNG THƯƠNG
+TRƯỜNG ĐẠI HỌC CÔNG NGHIỆP THÀNH PHỐ HỒ CHÍ MINH
+KHOA CÔNG NGHỆ ĐIỆN TỬ   
+
+
+
+
+
+TRƯƠNG ĐẮC TUẤN ANH
+NGUYỄN VĂN AN
+	
+
+
+THIẾT KẾ KÍNH THÔNG MINH HỖ TRỢ NHẬN DIỆN VÀ DỊCH NGÔN NGỮ KÝ HIỆU
+
+
+Chuyên ngành: IOT và Trí tuệ nhân tạo ứng dụng
+Mã chuyên ngành: 7510302
+
+
+
+
+ĐỀ CƯƠNG KHOÁ LUẬN TỐT NGHIỆP
+
+
+
+
+thành phỐ hỒ chí minh, NĂM 2026
+THÔNG TIN CHUNG
+Họ và tên sinh viên : Trương Đắc Tuấn Anh	MSHV: 22705401	
+Lớp	 : DHIOT18B	Khóa: K18	
+Email	 : truongdactuananh0711@gmail.com	
+Địa chỉ liên hệ	 : Đường Tl02, Phường An Phú Đông, Tp.HCM		
+Họ và tên sinh viên : Nguyễn Văn An	MSHV: 22725321	
+Lớp	 : DHIOT18B	Khóa: K18	
+Chuyên ngành	 : Iot và trí tuệ nhân tạo ứng dụng. Mã chuyên ngành: 7510302	
+Email	 : kuanh334@gmail.com	
+Địa chỉ liên hệ	 : 34/7 Đường 16, Phường Linh Chiểu, Thủ Đức		
+SĐT	 : 0357265983(An) / 0869941375(Anh)		
+Tên đề tài	 : Thiết kế kính thông minh hỗ trợ nhận diện và dịch ngôn ngữ ký hiệu	
+Người hướng dẫn	 : ThS. Nguyễn Thị Hồng Hà					
+SĐT	 : 0909500941	
+Email	 : nguyenthihongha@iuh.edu.vn	
+Cơ quan công tác	 : Trường Đại học Công Nghiệp TP. HCM	
+Người hướng dẫn	 : ThS. Phạm Quang Trí					
+SĐT	 : 0913982569	
+Email	 : phamquangtri@iuh.edu.vn	
+Cơ quan công tác	 : Trường Đại học Công Nghiệp TP. HCM	
+Tp. Hồ Chí Minh, ngày 30 tháng 5 năm 2026
+
+MỤC LỤC
+MỤC LỤC	i
+DANH MỤC HÌNH ẢNH	iii
+DANH MỤC BẢNG BIỂU	iv
+DANH MỤC TỪ VIẾT TẮT	v
+MỞ ĐẦU	1
+CHƯƠNG 1	TỔNG QUAN VỀ ĐỀ TÀI	3
+1.1	Giới thiệu chương	3
+1.2	Bối cảnh đề tài và xu hướng hiện nay	3
+1.3	Tổng quan bài toán nhận dạng ngôn ngữ ký hiệu	3
+1.4	Các nghiên cứu liên quan trước đây	3
+1.5	Nhận xét và khoảng trống nghiên cứu	4
+1.6	Định hướng giải pháp	4
+CHƯƠNG 2	CƠ SỞ LÝ THUYẾT	5
+2.1	Xử lý ảnh và thị giác máy tính	5
+2.2	Trích xuất đặc trưng giải phẫu bàn tay (MediaPipe)	5
+2.3	Chuẩn hóa đặc trưng hình học	5
+2.4	Cơ sở mô hình học sâu (MLP)	6
+2.5	Triển khai suy luận trên thiết bị nhúng (Lượng tử hóa)	7
+2.6	Truyền thông Socket TCP/IP và Text-To-Speech	7
+CHƯƠNG 3	PHÂN TÍCH VÀ THIẾT KẾ HỆ THỐNG	8
+3.1	Yêu cầu chức năng	8
+3.2	Yêu cầu phi chức năng và giới hạn	10
+3.3	Kiến trúc tổng thể	11
+3.4	Thiết kế phần cứng	11
+3.4.1	Khối thiết bị trên kính	12
+3.4.2	Khối xử lý trung tâm (Hộp xử lý rời)	12
+3.4.3	Khối hiển thị phụ trợ	13
+3.5	Kiến trúc phần mềm và trí tuệ nhân tạo	13
+3.5.1	Camera Thread	14
+3.5.2	AI Processing Thread	14
+3.5.3	Communication Thread	16
+3.5.4	TTS Thread (Text-to-Speech)	16
+3.5.5	Logger Thread	17
+3.5.6	Personalized Dataset Module	17
+3.6	Thiết kế giao diện ứng dụng Android	18
+3.6.1	Màn hình phụ đề thời gian thực	18
+3.6.2	Màn hình giao tiếp ngược (Speech-to-Text)	19
+3.6.3	Màn hình quản lý dữ liệu cá nhân hóa	19
+3.6.4	Màn hình cài đặt hệ thống	19
+CHƯƠNG 4	THỰC NGHIỆM VÀ ĐÁNH GIÁ KẾT QUẢ	21
+4.1	Môi trường thực nghiệm	21
+4.2	Kế hoạch thực hiện	21
+4.3	Kịch bản kiểm thử	24
+4.4	Rủi ro và phương án xử lý	25
+KẾT LUẬN VÀ KIẾN NGHỊ	26
+4.5	Hướng phát triển	27
+TÀI LIỆU THAM KHẢO	28
+PHỤ LỤC	29
+
+
+DANH MỤC HÌNH ẢNH
+Hình 3-1: Sơ đồ kiến trúc tổng thể	11
+Hình 3-2: Luồng xử lý tổng thể của hệ thổng	18
+Hình 3-3: Dự kiến giao diện Androi	20
+
+
+DANH MỤC BẢNG BIỂU
+Bảng 3-1: Yêu cầu chức năng của hệ thống	8
+Bảng 3-2: Yêu cầu phi chức năng và giới hạn triển khai	10
+Bảng 4-1: Kế hoạch thực hiện đề tài	21
+Bảng 4-2: Kịch bản kiểm thử	24
+
+DANH MỤC TỪ VIẾT TẮT
+
+
+MỞ ĐẦU
+1. Đặt vấn đề
+Trong kỷ nguyên chuyển đổi số, sự giao thoa giữa trí tuệ nhân tạo (AI), thị giác máy tính (Computer Vision) và Internet vạn vật (IoT) đã mở ra những bước tiến đột phá trong việc xây dựng các công nghệ hỗ trợ người khuyết tật. Phần lớn cộng đồng người có thính lực bình thường không được trang bị kiến thức về Ngôn ngữ Ký hiệu Tiếng Việt (VSL - Vietnamese Sign Language), vô hình trung tạo ra một rào cản vô hình nhưng kiên cố trong giao tiếp thường nhật. Để giải quyết bài toán này, các hệ thống nhận dạng truyền thống thường phụ thuộc vào máy chủ điện toán đám mây. Tuy nhiên, việc đẩy video liên tục lên đám mây làm phát sinh các nhược điểm chí mạng đối với một thiết bị đeo (wearable device): độ trễ (latency) nội tại phá vỡ tính thời gian thực, rủi ro xâm phạm quyền riêng tư, và sự hao hụt năng lượng khổng lồ. Do đó, việc xây dựng một hệ thống nhận dạng chạy cục bộ (Edge AI) là bài toán có tính cấp thiết cao.
+2. Mục tiêu của đề tài
+Mục tiêu của đề tài là thiết kế và triển khai một thiết bị kính thông minh tích hợp trí tuệ nhân tạo, có khả năng dịch ngôn ngữ ký hiệu sang tiếng Việt hoàn toàn theo thời gian thực tại thiết bị. Cụ thể:
+Thiết kế kiến trúc phần cứng phân tán (gọng kính camera và module xử lý bỏ túi) nhằm tối ưu công thái học.
+Xây dựng thuật toán trích xuất đặc trưng hình học bàn tay và mạng nơ-ron để phân loại ngôn ngữ ký hiệu.
+Triển khai mô hình AI cục bộ trên Raspberry Pi 4 để giảm độ trễ.
+Thiết lập luồng giao tiếp truyền dữ liệu văn bản siêu nhẹ đến điện thoại Android để phát âm thanh (Text-to-Speech).
+3. Đối tượng và phạm vi nghiên cứu
+Đối tượng nghiên cứu: Tín hiệu hình ảnh quang học từ góc nhìn thứ nhất (First-Person View - FPV), quy trình tiền xử lý ảnh, trích xuất điểm mốc MediaPipe, mô hình học máy tối ưu cho thiết bị nhúng và kiến thức về Ngôn ngữ Ký hiệu Tiếng Việt (VSL - Vietnamese Sign Language).
+Phạm vi nghiên cứu: Giới hạn nhận diện ở một tập hợp 20 đến 30 ký hiệu tĩnh (Static Sign Gestures) phổ biến phục vụ giao tiếp cơ bản. Mô hình được tối ưu để chạy ngoại tuyến (offline), không hỗ trợ phân tích các chuỗi ngữ pháp động (Dynamic Gestures) quá phức tạp.
+4. Ý nghĩa thực tiễn của đề tài
+Giải pháp chuyển dịch hoàn toàn sang mô hình Điện toán Biên (Edge AI). Mọi chu trình được thực thi cục bộ ngay trên vi xử lý trung tâm nhúng của thiết bị. Việc giữ kín vòng đời dữ liệu tại thiết bị đầu cuối không chỉ đảm bảo độ trễ gần như bằng không mà còn cho phép hệ thống hoạt động hoàn toàn độc lập trong các môi trường ngoại tuyến, mang lại công cụ giao tiếp tự nhiên và an toàn quyền riêng tư tuyệt đối cho người khiếm thính.
+TỔNG QUAN VỀ ĐỀ TÀI
+Giới thiệu chương
+Chương 1 trình bày bối cảnh hình thành đề tài và xu hướng nghiên cứu liên quan đến nhận dạng ngôn ngữ ký hiệu (Sign Language Recognition - SLR) theo hướng chạy trực tiếp trên thiết bị (Edge AI). Đồng thời, chương này tổng hợp các khoảng trống nghiên cứu, đặc biệt là các vấn đề liên quan đến góc nhìn camera và bộ dữ liệu đào tạo.
+Bối cảnh đề tài và xu hướng hiện nay
+Theo thống kê từ Tổ chức Y tế Thế giới (WHO), cộng đồng người khiếm thính và suy giảm thính lực trên toàn cầu ước tính lên tới 466 triệu người. Ngôn ngữ ký hiệu không đơn thuần là sự mô phỏng chuyển động tay, mà là một hệ thống ngôn ngữ độc lập. Xu hướng gần đây là đưa suy luận mô hình xuống thiết bị (Edge AI), ưu tiên xử lý tại chỗ để giảm độ trễ và nâng cao tính ổn định thay vì phụ thuộc vào các máy chủ Cloud Computing.
+ Tổng quan bài toán nhận dạng ngôn ngữ ký hiệu
+Y tế từ xa cần dữ liệu có thể truyền đi nhanh và có khả năng lưu lại. Với âm thanh tim phổi, luồng realtime giúp bác sĩ nghe trực tiếp trong lúc đo, còn bản ghi scan giúp xem lại và so sánh theo thời gian. Vì vậy hệ thống cần xử lý đồng thời hai loại dữ liệu: kênh realtime độ trễ thấp và dữ liệu lưu trữ có cấu trúc.
+Các nghiên cứu liên quan trước đây
+
+
+Nhận xét và khoảng trống nghiên cứu
+Giải pháp của đề tài là thiết kế hệ thống theo bốn lớp: thiết bị ESP32-S3, backend Node.js, ứng dụng Android và web admin. Thiết bị thu âm bằng micro MEMS/I2S và gửi PCM về backend. Backend tiếp nhận, phát realtime qua WebSocket, lưu scan và cung cấp REST API. Android phục vụ người dùng/bác sĩ, còn web admin phục vụ quản trị dữ liệu và vận hành.
+Định hướng giải pháp
+Giải pháp tập trung vào mô hình Điện toán Biên (Edge AI) để giải quyết triệt để các vấn đề về độ trễ, quyền riêng tư, thiếu hụt dữ liệu FPV và điểm mù quang học.
+
+Kiến trúc: Sử dụng kiến trúc phân tán với Raspberry Pi 4 (Module xử lý bỏ túi).
+
+Phần cứng: Khắc phục sụt áp khi tải AI nặng bằng IC nâng áp đồng bộ TPS61088 (giới hạn chuyển mạch 10A).
+
+Quang học: Dùng Camera góc siêu rộng (120°-160° FOV) để bao quát toàn bộ động tác, loại bỏ điểm mù.
+
+Thuật toán & Tối ưu hóa:
+Trích xuất đặc trưng giải phẫu bàn tay (MediaPipe) kết hợp Chuẩn hóa hình học (Tịnh tiến và Tỷ lệ) để chống nhiễu không gian và biến dạng phối cảnh FPV.
+
+Sử dụng Mạng nơ-ron đa lớp (MLP) và Lượng tử hóa mô hình sang .tflite để đảm bảo tốc độ khung hình (FPS) thời gian thực trên thiết bị nhúng.
+
+Giao tiếp: Áp dụng Cấu trúc Lập trình Đa luồng (Python Multithreading) để tối ưu luồng xử lý. Thiết lập giao tiếp Socket TCP/IP để truyền dữ liệu JSON siêu nhẹ, kích hoạt dịch vụ Text-to-Speech (TTS) cục bộ trên điện thoại Android.
+
+CƠ SỞ LÝ THUYẾT
+Xử lý ảnh và thị giác máy tính
+Tiền Xử Lý Khung Hình (OpenCV Pre-processing): Luồng video thời gian thực từ camera liên tục thu nạp thông qua các giao thức của thư viện mã nguồn mở OpenCV. Các khung hình (frames) được resize về độ phân giải quy chuẩn, áp dụng các bộ lọc khử nhiễu cảm biến, và chuẩn hóa không gian màu nhằm làm rõ nét các đường biên (edges) của cơ thể người.
+Định Vị Không Gian Đối Tượng (YOLO): Khung hình được chuyển tiếp cho mạng nơ-ron YOLO. Nhiệm vụ của YOLO là rà soát bối cảnh và xuất ra các tọa độ hộp giới hạn (Bounding Boxes) bao quanh bàn tay để cắt ra Vùng quan tâm (Region of Interest - ROI), loại bỏ dữ liệu môi trường rác.
+
+Trích xuất đặc trưng giải phẫu bàn tay (MediaPipe)
+Vùng ảnh quan tâm (ROI) nhỏ gọn được đưa vào mạng lưới MediaPipe Hands của Google. MediaPipe thực hiện dự đoán trực tiếp hệ tọa độ 3D của cấu trúc giải phẫu học, tạo ra một biểu diễn vector chứa tọa độ không gian của chính xác 21 điểm khớp xương trọng yếu.
+Các tọa độ X và Y được chuẩn hóa tuyệt đối theo chiều rộng và chiều cao của hình ảnh. Tham số Z đại diện cho chiều sâu so với điểm gốc là Khớp cổ tay.
+Chuẩn hóa đặc trưng hình học
+Để loại bỏ vấn đề nhiễu không gian (spatial variance), tức là sự thay đổi về vị trí hoặc kích thước bàn tay trước camera, một quy trình chuẩn hóa toán học được áp dụng cho các đặc trưng vector (21 điểm khớp 3D) thu được từ MediaPipe. Mục tiêu là làm cho các đặc trưng hình học này trở nên bất biến (invariant) đối với vị trí và tỷ lệ.
+
+Quy trình chuẩn hóa bao gồm hai bước chính:
+Định chuẩn Tịnh tiến (Translation Normalization):
+Lý thuyết: Tịnh tiến (dịch chuyển) toàn bộ hệ trục tọa độ sao cho Khớp cổ tay (Wrist joint) trở thành điểm gốc (Origin).
+Ứng dụng: Thao tác này triệt tiêu hoàn toàn ảnh hưởng của vị trí tay trong không gian. Bất kể người dùng thực hiện ký hiệu ở đâu trong khung hình (trên mặt, trước ngực, hay lệch trái/phải), vị trí tương đối của các khớp xương so với cổ tay luôn được giữ nguyên.
+Định chuẩn Tỷ lệ (Scale Normalization/Min-Max Scaling):
+Lý thuyết: Chia tương đối tọa độ đã tịnh tiến cho khoảng cách xa nhất giữa các khớp trên bàn tay.
+Ứng dụng: Thao tác này triệt tiêu ảnh hưởng của kích thước bàn tay hoặc khoảng cách từ tay đến camera, đặc biệt quan trọng để chống lại hiện tượng biến dạng phối cảnh (perspective foreshortening) xảy ra ở góc nhìn thứ nhất (FPV). Nhờ đó, mô hình AI có thể nhận diện chính xác hình dáng ký hiệu, bất kể bàn tay to hay nhỏ hoặc ở gần/xa camera.
+Cơ sở mô hình học sâu (MLP)
+Thay vì nạp toàn bộ ảnh vào mạng tích chập (CNN) khổng lồ, vector hình học chuẩn hóa (gồm 63 chiều biến số) được đưa vào một Mạng nơ-ron đa lớp (Multi-Layer Perceptron - MLP) để tính toán xác suất đầu ra cho các lớp ngôn ngữ. Việc giảm chiều dữ liệu này đảm bảo khả năng chạy realtime trên Edge AI.
+
+Triển khai suy luận trên thiết bị nhúng (Lượng tử hóa)
+Mô hình học sâu thô (.pt,.pb) được lượng tử hóa (Quantization) sang định dạng TensorFlow Lite (.tflite). Kỹ thuật này ánh xạ trọng số từ Float32 xuống INT8 hoặc FP16. Dù hao hụt 1-2% độ chính xác, dung lượng tệp mô hình giảm 4 lần, tận dụng tối đa tập lệnh SIMD NEON trên nhân ARM để tăng tốc độ khung hình (FPS).
+Truyền thông Socket TCP/IP và Text-To-Speech
+Thiết bị đóng vai trò giao diện tương tác cuối cùng là Smartphone Android. Giao thức kết nối giữa phần cứng nhúng và điện thoại dựa trên nền tảng giao tiếp Sockets của bộ giao thức TCP/IP truyền qua Wi-Fi Hotspot nội bộ. Dữ liệu được cấu trúc dưới định dạng JSON siêu nhẹ.
+
+PHÂN TÍCH VÀ THIẾT KẾ HỆ THỐNG
+Yêu cầu chức năng
+Bảng -: Yêu cầu chức năng của hệ thống
+
+
+
+Yêu cầu phi chức năng và giới hạn
+Bảng -: Yêu cầu phi chức năng và giới hạn triển khai
+
+
+Kiến trúc tổng thể
+
+Hình -: Sơ đồ kiến trúc tổng thể
+
+Thiết kế phần cứng 
+ Hệ thống được thiết kế theo mô hình Edge AI Wearable và được chia thành ba khối chức năng chính nhằm đảm bảo tính công thái học, khả năng xử lý thời gian thực và sự thuận tiện trong quá trình sử dụng.
+
+Khối thiết bị trên kính
+Khối thiết bị trên kính có nhiệm vụ thu thập dữ liệu và phản hồi thông tin tới người dùng. Các thành phần bao gồm:
+Camera OV5647 5MP góc rộng (120°–160°) kết nối với Raspberry Pi thông qua giao tiếp CSI, được gắn trên gọng kính để ghi nhận hình ảnh bàn tay của người sử dụng theo góc nhìn thứ nhất (First-Person View).
+Cảm biến chạm điện dung TTP223 dùng làm nút điều khiển nhanh cho các chức năng như khởi động hệ thống, kích hoạt chế độ học ký hiệu mới hoặc điều khiển phát âm thanh.
+Loa mini 8Ω–1W kết hợp với mạch khuếch đại âm thanh số MAX98357A chuẩn I2S để phát giọng nói trực tiếp từ kết quả nhận diện.
+Cáp CSI mềm dài kết nối camera trên kính với Raspberry Pi đặt trong hộp xử lý trung tâm.
+Khối xử lý trung tâm (Hộp xử lý rời)
+Khối xử lý trung tâm được đặt tại túi áo hoặc thắt lưng nhằm giảm tải trọng cho kính. Đây là nơi thực hiện toàn bộ quá trình xử lý AI.
+Các thành phần bao gồm:
+Raspberry Pi 4 Model B (4GB hoặc 8GB RAM) đóng vai trò là bộ xử lý trung tâm.
+Hai pin Li-ion 18650 mắc song song để tăng dung lượng và đảm bảo khả năng cung cấp dòng điện ổn định.
+Module sạc và bảo vệ pin TP4056.
+Mạch nâng áp TPS61088 công suất cao cung cấp nguồn 5V ổn định cho Raspberry Pi.
+Kết nối WiFi hoặc Bluetooth để giao tiếp với ứng dụng Android.
+Khối này chịu trách nhiệm thực hiện các tác vụ xử lý ảnh, nhận diện ngôn ngữ ký hiệu, chuyển đổi văn bản thành giọng nói và quản lý dữ liệu hệ thống.
+Khối hiển thị phụ trợ
+Khối hiển thị phụ trợ là ứng dụng Android được phát triển nhằm hỗ trợ người dùng trong quá trình sử dụng hệ thống.
+Ứng dụng có các chức năng:
+Hiển thị văn bản được nhận diện theo thời gian thực.
+Lưu trữ lịch sử giao tiếp.
+Cấu hình các tham số của hệ thống.
+Quản lý dữ liệu người dùng.
+Đồng bộ dữ liệu nhận diện khi cần thiết.
+
+Kiến trúc phần mềm và trí tuệ nhân tạo
+Để đảm bảo hệ thống hoạt động ổn định trên nền tảng Raspberry Pi 4, phần mềm được thiết kế theo kiến trúc đa luồng (Multithreading Architecture), trong đó mỗi luồng đảm nhận một nhiệm vụ riêng biệt nhằm tránh hiện tượng nghẽn tài nguyên và giảm độ trễ xử lý.
+
+Camera Thread
+Luồng Camera chịu trách nhiệm:
+Khởi tạo camera OV5647.
+Thu nhận liên tục các khung hình từ camera.
+Đưa dữ liệu ảnh vào bộ đệm (Buffer Queue).
+Việc sử dụng bộ đệm giúp hệ thống duy trì tốc độ khung hình ổn định và tránh hiện tượng mất frame khi khối AI xử lý chậm hơn tốc độ thu ảnh.
+AI Processing Thread
+Đây là luồng xử lý chính của hệ thống.
+Quy trình xử lý gồm các bước:
+Bước 1: Thu nhận ảnh
+Khung hình được lấy từ Camera Thread thông qua bộ đệm dữ liệu.
+Bước 2: Phát hiện và trích xuất bàn tay
+Hệ thống sử dụng MediaPipe Hands để:
+Phát hiện vị trí bàn tay.
+Theo dõi chuyển động bàn tay.
+Trích xuất 21 điểm Landmark của bàn tay.
+Mỗi Landmark bao gồm ba tọa độ: x, y, z
+Do đó:
+21 Landmark × 3 tọa độ = 63 giá trị đặc trưng.
+Các giá trị này mô tả đầy đủ hình dạng và tư thế của bàn tay.
+Bước 3: Phân loại ký hiệu
+Bộ đặc trưng gồm 63 giá trị được đưa vào mô hình học máy MLP (Multilayer Perceptron).
+Mô hình MLP thực hiện:
+Nhận dạng ký hiệu ngôn ngữ ký hiệu.
+Phân loại thành các nhãn tương ứng.
+Xuất ra kết quả dưới dạng văn bản tiếng Việt.
+Đối với các ký hiệu động trong tương lai, hệ thống có thể được nâng cấp bằng mô hình GRU hoặc LSTM để xử lý chuỗi chuyển động theo thời gian.
+Bước 4: Làm mượt kết quả 
+Để tránh hiện tượng nhảy nhãn liên tục do nhiễu, hệ thống áp dụng cơ chế làm mượt kết quả.
+Kết quả chỉ được chấp nhận khi:
+Cùng một nhãn xuất hiện liên tiếp trong nhiều khung hình (ví dụ 5 frame liên tục), hoặc
+Độ tin cậy của mô hình vượt quá ngưỡng xác định trước.
+Bước này giúp nâng cao độ ổn định và độ chính xác của hệ thống.
+Bước 5: Sinh văn bản đầu ra
+Sau khi được xác nhận, kết quả nhận diện được chuyển thành văn bản tiếng Việt để phục vụ các khối chức năng tiếp theo.
+
+Communication Thread
+Luồng Communication chịu trách nhiệm truyền dữ liệu giữa Raspberry Pi và ứng dụng Android.
+Các chức năng bao gồm:
+Gửi kết quả nhận diện tới ứng dụng Android.
+Nhận lệnh điều khiển từ người dùng.
+Đồng bộ dữ liệu cấu hình.
+Giao tiếp có thể được thực hiện thông qua:
+MQTT
+WebSocket
+TCP/IP Socket
+Tùy thuộc vào yêu cầu triển khai thực tế.
+TTS Thread (Text-to-Speech)
+Luồng TTS hoạt động độc lập với luồng AI nhằm tránh ảnh hưởng đến tốc độ nhận diện.
+Các chức năng bao gồm:
+Nhận văn bản đầu ra từ AI Thread.
+Chuyển đổi văn bản thành giọng nói bằng công nghệ Text-to-Speech.
+Xuất tín hiệu âm thanh qua giao tiếp I2S.
+Phát âm thanh thông qua MAX98357A và loa mini gắn trên kính.
+
+Logger Thread
+Luồng Logger chịu trách nhiệm quản lý dữ liệu và giám sát hệ thống.
+Các nhiệm vụ chính:
+Ghi nhật ký hoạt động của hệ thống.
+Lưu lịch sử nhận diện.
+Ghi nhận các lỗi phát sinh.
+Lưu dữ liệu huấn luyện mới do người dùng bổ sung.
+Việc tách riêng Logger Thread giúp đảm bảo quá trình ghi dữ liệu không ảnh hưởng đến tốc độ xử lý của hệ thống.
+Personalized Dataset Module
+Đây là chức năng mở rộng mang tính đặc trưng của hệ thống.
+Module này cho phép:
+Người dùng tự tạo ký hiệu mới.
+Gán nhãn cho ký hiệu.
+Bổ sung dữ liệu vào tập dữ liệu cá nhân.
+Cập nhật hoặc huấn luyện lại mô hình nhận diện.
+Nhờ đó hệ thống không chỉ nhận diện các ký hiệu được huấn luyện sẵn mà còn có khả năng học thêm các ký hiệu cá nhân hóa theo nhu cầu của từng người dùng.
+
+Hình -: Luồng xử lý tổng thể của hệ thổng
+
+
+Thiết kế giao diện ứng dụng Android
+Ứng dụng Android đóng vai trò là giao diện phụ trợ của hệ thống kính thông minh, thực hiện các chức năng hiển thị kết quả nhận diện, hỗ trợ giao tiếp hai chiều và cấu hình hệ thống. Giao diện ứng dụng được thiết kế đơn giản, dễ sử dụng, phù hợp với người khiếm thính và người hỗ trợ giao tiếp.
+Ứng dụng bao gồm 04 màn hình chức năng chính:
+Màn hình phụ đề thời gian thực
+Đây là màn hình chính của ứng dụng, có nhiệm vụ nhận dữ liệu văn bản từ Raspberry Pi thông qua giao thức MQTT/WebSocket và hiển thị kết quả nhận diện ngôn ngữ ký hiệu theo thời gian thực.
+Các chức năng chính:
+Hiển thị văn bản nhận diện mới nhất.
+Hiển thị lịch sử hội thoại.
+Hiển thị trạng thái kết nối thiết bị.
+Hiển thị mức pin và trạng thái hoạt động của hệ thống.
+Màn hình giao tiếp ngược (Speech-to-Text)
+Màn hình này hỗ trợ người bình thường giao tiếp với người khiếm thính bằng cách chuyển đổi giọng nói thành văn bản.
+Các chức năng chính:
+Thu âm giọng nói từ điện thoại.
+Chuyển đổi giọng nói thành văn bản.
+Hiển thị văn bản với kích thước lớn.
+Hỗ trợ xoay màn hình để người khiếm thính dễ quan sát.
+Màn hình quản lý dữ liệu cá nhân hóa
+Màn hình cho phép người dùng tạo và quản lý các ký hiệu riêng phục vụ việc mở rộng bộ dữ liệu huấn luyện.
+Các chức năng chính:
+Thêm ký hiệu mới.
+Gán nhãn dữ liệu.
+Quản lý danh sách ký hiệu đã lưu.
+Đồng bộ dữ liệu với Raspberry Pi để cập nhật mô hình nhận diện.
+Màn hình cài đặt hệ thống
+Màn hình dùng để cấu hình và quản lý hoạt động của hệ thống.
+Các chức năng chính:
+Thiết lập kết nối với Raspberry Pi.
+Điều chỉnh âm lượng và tốc độ đọc TTS.
+Xem thông tin phiên bản và trạng thái hệ thống.
+
+Hình -: Dự kiến giao diện Androi
+
+
+
+THỰC NGHIỆM VÀ ĐÁNH GIÁ KẾT QUẢ
+Môi trường thực nghiệm
+Các thí nghiệm được thực hiện trong môi trường trong nhà với điều kiện ánh sáng ổn định. Người tham gia thực hiện các ký hiệu tay trước camera được gắn trên kính thông minh. Hệ thống tiến hành nhận diện, chuyển đổi sang văn bản và phát âm thanh tương ứng thông qua loa đeo trên kính.
+Kế hoạch thực hiện
+Bảng -: Kế hoạch thực hiện đề tài
+
+
+
+Kịch bản kiểm thử 
+Bảng -: Kịch bản kiểm thử 
+
+
+
+Rủi ro và phương án xử lý
+Trong quá trình triển khai hệ thống kính thông minh hỗ trợ dịch ngôn ngữ ký hiệu, đề tài có thể gặp một số rủi ro liên quan đến phần cứng, phần mềm và môi trường sử dụng thực tế như sau:
+Đối với khối nhận diện, độ chính xác của hệ thống có thể bị ảnh hưởng bởi điều kiện ánh sáng không phù hợp, bàn tay bị che khuất hoặc sự khác biệt trong cách thực hiện ký hiệu giữa các người dùng. Để khắc phục, nhóm tiến hành thu thập dữ liệu trong nhiều điều kiện khác nhau, đồng thời sử dụng thuật toán MediaPipe Hands kết hợp mô hình học máy nhằm tăng khả năng tổng quát hóa của hệ thống.
+Về hiệu năng xử lý, Raspberry Pi 4 có thể gặp tình trạng quá tải khi thực hiện đồng thời nhiều tác vụ như xử lý hình ảnh, nhận diện ký hiệu, phát âm thanh và truyền dữ liệu. Nhóm giải quyết vấn đề này bằng cách áp dụng kiến trúc đa luồng (Multithreading), tối ưu mô hình dưới định dạng TensorFlow Lite và giảm kích thước ảnh đầu vào khi cần thiết.
+Đối với hệ thống nguồn, hiện tượng sụt áp có thể xảy ra khi Raspberry Pi hoạt động ở mức tải cao trong thời gian dài. Vì vậy, đề tài sử dụng hai pin Li-ion 18650 mắc song song kết hợp mạch sạc TP4056 và bộ nâng áp công suất cao TPS61088 nhằm đảm bảo nguồn điện ổn định cho toàn hệ thống.
+Ngoài ra, kết quả nhận diện có thể dao động giữa các khung hình liên tiếp, gây ra hiện tượng hiển thị hoặc phát âm thanh không chính xác. Để hạn chế vấn đề này, hệ thống áp dụng cơ chế Prediction Smoothing nhằm lọc và xác nhận kết quả trước khi xuất ra người dùng.
+Bên cạnh đó, các sự cố như mất kết nối với ứng dụng Android, lỗi phần mềm hoặc treo hệ thống cũng được xem xét trong quá trình thiết kế. Hệ thống được xây dựng cơ chế tự động kết nối lại, ghi nhận nhật ký hoạt động và giám sát tiến trình nhằm nâng cao tính ổn định khi vận hành thực tế.
+
+KẾT LUẬN VÀ KIẾN NGHỊ
+Đề tài “Thiết kế kính thông minh hỗ trợ nhận diện và dịch ngôn ngữ ký hiệu sang tiếng Việt theo thời gian thực” hướng đến việc xây dựng một hệ thống hỗ trợ giao tiếp dành cho người khiếm thính dựa trên công nghệ Trí tuệ nhân tạo (AI), Thị giác máy tính (Computer Vision) và hệ thống nhúng (Embedded Systems). Đề tài có quy mô phù hợp với khóa luận tốt nghiệp khi bao gồm đầy đủ các thành phần từ phần cứng, phần mềm nhúng, mô hình học máy, ứng dụng di động và giao tiếp không dây giữa các thiết bị.
+Kết quả kỳ vọng của đề tài là xây dựng thành công một nguyên mẫu (Prototype) có khả năng nhận diện các ký hiệu cơ bản theo thời gian thực, hỗ trợ chuyển đổi thành văn bản và giọng nói với độ chính xác cao, thời gian phản hồi thấp và khả năng hoạt động độc lập mà không phụ thuộc vào các dịch vụ điện toán đám mây. Ngoài ra, hệ thống còn hỗ trợ giao tiếp hai chiều thông qua chức năng chuyển đổi giọng nói thành văn bản trên ứng dụng Android.
+
+
+Hướng phát triển
+Trong tương lai, hệ thống có thể được tiếp tục nghiên cứu và phát triển theo các hướng sau:
+Mở rộng bộ dữ liệu ngôn ngữ ký hiệu
+Thu thập thêm dữ liệu từ nhiều người dùng, nhiều độ tuổi và nhiều điều kiện môi trường khác nhau nhằm nâng cao khả năng tổng quát hóa và độ chính xác của mô hình nhận diện.
+Tăng số lượng ký hiệu được nhận diện
+Mở rộng từ tập ký hiệu cơ bản hiện tại lên hàng trăm ký hiệu phổ biến trong ngôn ngữ ký hiệu tiếng Việt, đáp ứng tốt hơn nhu cầu giao tiếp thực tế.
+Nhận diện câu và hội thoại hoàn chỉnh
+Nghiên cứu áp dụng các mô hình xử lý chuỗi như LSTM hoặc GRU để nhận diện các câu và đoạn hội thoại liên tục thay vì chỉ nhận diện từng ký hiệu đơn lẻ.
+Cá nhân hóa dữ liệu người dùng
+Cho phép người dùng tự tạo các ký hiệu riêng, bổ sung dữ liệu huấn luyện và cập nhật mô hình nhận diện nhằm phù hợp với thói quen sử dụng của từng cá nhân.
+Tối ưu mô hình AI
+Áp dụng các kỹ thuật tối ưu hóa và lượng tử hóa mô hình nhằm giảm thời gian xử lý, tăng tốc độ nhận diện và tiết kiệm tài nguyên trên Raspberry Pi.
+Nâng cấp phần cứng
+Thu nhỏ kích thước hệ thống, tối ưu thiết kế kính thông minh và cải thiện thời lượng pin để nâng cao tính di động và khả năng sử dụng thực tế.
+Phát triển ứng dụng Android
+Bổ sung các chức năng quản lý người dùng, đồng bộ dữ liệu đám mây, lưu trữ lịch sử giao tiếp và thống kê quá trình sử dụng hệ thống.
+Hỗ trợ đa ngôn ngữ
+Mở rộng khả năng chuyển đổi sang nhiều ngôn ngữ khác ngoài tiếng Việt, giúp tăng tính ứng dụng trong môi trường quốc tế.
+Tích hợp công nghệ AI nâng cao
+Kết hợp các mô hình AI hiện đại nhằm nâng cao khả năng hiểu ngữ cảnh, dự đoán từ tiếp theo và hỗ trợ giao tiếp tự nhiên hơn.
+Ứng dụng trong thực tế
+Triển khai thử nghiệm tại trường học, bệnh viện, trung tâm hỗ trợ người khiếm thính và các môi trường công cộng để đánh giá hiệu quả và hoàn thiện sản phẩm.
+
+TÀI LIỆU THAM KHẢO
+[1] Raspberry Pi Foundation, Raspberry Pi Documentation. [Online]. Available: https://www.raspberrypi.com/documentation/. [Accessed: Jun. 2026].
+[2] F. Zhang, V. Bazarevsky, A. Vakunov, A. Tkachenka, G. Sung, C.-L. Chang and M. Grundmann, “MediaPipe Hands: On-device Real-time Hand Tracking,” arXiv preprint arXiv:2006.10214, 2020.
+[3] M. Abadi et al., “TensorFlow: Large-Scale Machine Learning on Heterogeneous Distributed Systems,” arXiv preprint arXiv:1603.04467, 2016.
+[4] Google, TensorFlow Lite Documentation. [Online]. Available: https://www.tensorflow.org/lite. [Accessed: Jun. 2026].
+[5] G. Bradski, “The OpenCV Library,” Dr. Dobb's Journal of Software Tools, vol. 25, no. 11, pp. 120–125, 2000.
+[6] Google, Android Developers Documentation. [Online]. Available: https://developer.android.com/. [Accessed: Jun. 2026].
+[7] Google, TextToSpeech API Reference. [Online]. Available: https://developer.android.com/reference/android/speech/tts/TextToSpeech. [Accessed: Jun. 2026].
+[8] A. Banks and R. Gupta, MQTT Version 3.1.1. OASIS Standard, Dec. 2014.
+[9] Raspberry Pi Foundation, Camera Module Documentation. [Online]. Available: https://www.raspberrypi.com/documentation/accessories/camera.html. [Accessed: Jun. 2026].
+[10] R. David, J. Duke, A. Jain, V. Reddi, N. Jeffries, J. Li, A. Kreeger, I. Nappier, M. N. Bansal, Z. Wu and others, “TensorFlow Lite Micro: Embedded Machine Learning on TinyML Systems,” arXiv preprint arXiv:2010.08678, 2020.
+
+
+
+PHỤ LỤC

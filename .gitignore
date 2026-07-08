@@ -1,0 +1,33 @@
+# Thư mục chứa môi trường ảo
+venv/
+env/
+.env
+
+# Thư mục chứa dữ liệu Dataset quá nặng (KHÔNG ĐƯỢC ĐẨY LÊN GITHUB)
+Dataset/
+data/my_preprocessed/
+data/keypoints_splited/
+temp_extract/
+*.mp4
+*.npy
+*.zip
+
+# Các file model trọng số đã train (rất nặng)
+models/*.h5
+models/*.keras
+models/*.tflite
+
+# Thư mục log của hệ thống
+logs/
+__pycache__/
+*.pyc
+
+# Các file cấu hình của IDE
+.vscode/
+.idea/
+.ipynb_checkpoints/
+
+# File tạm thời của AI Assistant
+.gemini/
+agent_for_codex.md
+qc_report.md
