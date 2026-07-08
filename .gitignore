@@ -31,3 +31,8 @@ __pycache__/
 .gemini/
 agent_for_codex.md
 qc_report.md
+
+# Các file rác hoặc dự án không liên quan
+supermarket-dashboard/
+temp1.txt
+temp_docx.txt
