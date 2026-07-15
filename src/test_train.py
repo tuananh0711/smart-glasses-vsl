@@ -121,6 +121,13 @@ def main():
     print(f"   Train loss (epoch cuối):          {history.history['loss'][-1]:.4f}")
     print(f"   Val loss (epoch cuối):            {history.history['val_loss'][-1]:.4f}")
     
+    # Lưu mô hình test tương thích để chạy inference test (Lỗi 2)
+    models_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'models')
+    os.makedirs(models_dir, exist_ok=True)
+    model_save_path = os.path.join(models_dir, 'vsl_lstm_baseline_colab.keras')
+    model.save(model_save_path)
+    print(f"💾 Đã lưu mô hình test tại: {model_save_path}")
+    
     # Ước tính 100 epochs
     est_100 = avg_time_per_epoch * 100
     print(f"\n⏱️ DỰ TÍNH CHO 100 EPOCHS:")
