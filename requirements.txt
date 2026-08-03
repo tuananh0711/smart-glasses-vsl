@@ -6,3 +6,4 @@ matplotlib
 Pillow
 scikit-learn
 jupyter
+pyttsx3>=2.90

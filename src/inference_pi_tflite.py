@@ -24,26 +24,37 @@ import cv2
 import mediapipe as mp
 
 # -----------------------------------------------------------------------------
-# NẠP ENGINE TTS PHÁT ÂM THÀNH OFFLINE QUA LOA KÍNH (ADR-004)
+# KHỞI TẠO LAZY ENGINE TTS PHÁT ÂM THÀNH OFFLINE (ADR-004)
 # -----------------------------------------------------------------------------
-try:
-    import pyttsx3
-    tts_engine = pyttsx3.init()
-    tts_engine.setProperty('rate', 160) # Tốc độ nói
-    HAS_TTS = True
-    print("✅ Đã khởi tạo engine TTS Offline (Phát loa kính thông minh)")
-except Exception as e:
-    HAS_TTS = False
-    print(f"⚠️ Không thể nạp pyttsx3: {e}. (Sẽ chạy chế độ im lặng/No-Audio)")
+_tts_engine = None
+_tts_initialized = False
 
-def speak_offline_text(text):
+def init_tts():
+    """Khởi tạo Lazy Engine TTS chỉ khi cần thiết (Không khởi tạo khi --no_tts)."""
+    global _tts_engine, _tts_initialized
+    if _tts_initialized:
+        return _tts_engine is not None
+    _tts_initialized = True
+    try:
+        import pyttsx3
+        _tts_engine = pyttsx3.init()
+        _tts_engine.setProperty('rate', 160)
+        print("✅ Đã khởi tạo engine TTS Offline (Phát loa kính thông minh)")
+        return True
+    except Exception as e:
+        print(f"⚠️ Không thể khởi tạo pyttsx3: {e}. (Sẽ chạy chế độ im lặng/No-Audio)")
+        _tts_engine = None
+        return False
+
+def speak_offline_text(text, enable_tts=True):
     """Phát âm thanh tiếng Việt ra loa kính theo ADR-004."""
-    if HAS_TTS and text:
-        try:
-            tts_engine.say(text)
-            tts_engine.runAndWait()
-        except Exception as e:
-            print(f"⚠️ Lỗi phát loa TTS: {e}")
+    if enable_tts and text:
+        if init_tts() and _tts_engine is not None:
+            try:
+                _tts_engine.say(text)
+                _tts_engine.runAndWait()
+            except Exception as e:
+                print(f"⚠️ Lỗi phát loa TTS: {e}")
 
 # -----------------------------------------------------------------------------
 # HÀM CẤU HÌNH & HÀM BỔ TRỢ
