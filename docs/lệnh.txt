@@ -1,0 +1,27 @@
+Đọc D:\OneDrive - gmalll\DATN\AGENT_START.md
+và tự thực hiện đúng vai trò của bạn đối với task hiện tại.
+
+
+Prompt ngắn trong cùng chat Android Studio
+Tiếp tục task hiện tại.
+Chỉ làm đúng scope của TASK-xxx.
+Sau khi hoàn thành, chạy verification và cập nhật Handoff.
+
+
+Prompt khi mở chat Android Studio mới
+Đây là phiên mới.
+Đọc:
+1. D:\OneDrive - gmalll\DATN\AGENT_START.md
+2. Current task được chỉ định trong file đó
+
+Chỉ đọc thêm tài liệu khi Current task yêu cầu.
+Sau đó thực hiện đúng vai trò của bạn.
+
+
+Prompt khi Android Studio đã code xong
+Chạy toàn bộ verification bắt buộc.
+Ghi file đã sửa, quyết định kỹ thuật, kết quả build/test và blocker
+vào Current task.
+
+Nếu đạt acceptance criteria, chuyển task sang READY_FOR_REVIEW
+và dừng sửa source.

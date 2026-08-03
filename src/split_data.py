@@ -29,6 +29,9 @@ def main():
     total_train = 0
     total_test = 0
 
+    os.makedirs(os.path.join(DEST_DIR, 'train'), exist_ok=True)
+    os.makedirs(os.path.join(DEST_DIR, 'test'), exist_ok=True)
+
     for idx, cls in enumerate(classes):
         cls_src_dir = os.path.join(SRC_DIR, cls)
         files = glob.glob(os.path.join(cls_src_dir, '*.npy'))
@@ -61,12 +64,6 @@ def main():
         # Thư mục đích
         train_dest_dir = os.path.join(DEST_DIR, 'train', cls)
         test_dest_dir = os.path.join(DEST_DIR, 'test', cls)
-
-        # Xóa sạch thư mục đích cũ nếu có để tránh lẫn dữ liệu cũ
-        if os.path.exists(train_dest_dir):
-            shutil.rmtree(train_dest_dir)
-        if os.path.exists(test_dest_dir):
-            shutil.rmtree(test_dest_dir)
 
         os.makedirs(train_dest_dir, exist_ok=True)
         os.makedirs(test_dest_dir, exist_ok=True)

@@ -1,9 +1,8 @@
-tensorflow==2.15.0
-protobuf==4.25.3
-ml-dtypes==0.2.0
-pandas
-scikit-learn
-matplotlib
-opencv-python
+tensorflow==2.16.1
 mediapipe==0.10.14
+numpy>=1.23.5,<2.0
+opencv-python
+matplotlib
+Pillow
+scikit-learn
 jupyter

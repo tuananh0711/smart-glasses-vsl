@@ -1,4 +1,5 @@
 # Thư mục chứa môi trường ảo
+.venv/
 venv/
 env/
 .env
@@ -31,6 +32,9 @@ __pycache__/
 .gemini/
 agent_for_codex.md
 qc_report.md
+extract_weights.py
+inspect_model.py
+models/classes_fixed.json
 
 # Các file rác hoặc dự án không liên quan
 supermarket-dashboard/

@@ -120,9 +120,16 @@ def process_video_worker(video_path, save_path):
             return "failed"
             
         T = len(frames_data_all)
-        indices = np.linspace(0, T - 1, MAX_FRAMES, dtype=int)
-        resampled_data = [frames_data_all[idx] for idx in indices]
-        resampled_data = np.array(resampled_data)
+        if T >= MAX_FRAMES:
+            indices = np.linspace(0, T - 1, MAX_FRAMES, dtype=int)
+            resampled_data = [frames_data_all[idx] for idx in indices]
+            resampled_data = np.array(resampled_data)
+        else:
+            resampled_data = list(frames_data_all)
+            zero_frame = np.zeros((48, 3))
+            while len(resampled_data) < MAX_FRAMES:
+                resampled_data.append(zero_frame)
+            resampled_data = np.array(resampled_data)
     else:
         # Chỉ mục các frame phân bố đều (Tránh chạy MediaPipe trên toàn bộ frame thừa)
         target_indices = np.linspace(0, total_frames - 1, MAX_FRAMES, dtype=int)

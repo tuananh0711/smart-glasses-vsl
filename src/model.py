@@ -35,37 +35,114 @@ LOGS_DIR = os.path.join(_BASE_DIR, 'logs')
 BATCH_SIZE = 32
 EPOCHS = 3
 
+def build_lstm_model(input_shape, num_classes):
+    """
+    Xây dựng mô hình LSTM tương ứng với file weights lstm nếu được nạp.
+    """
+    if len(input_shape) == 2:
+        flattened_shape = input_shape
+    else:
+        flattened_shape = (input_shape[0], input_shape[1] * input_shape[2])
+        
+    model = Sequential([
+        tf.keras.layers.LSTM(128, return_sequences=True, activation='tanh', input_shape=flattened_shape),
+        Dropout(0.2),
+        BatchNormalization(),
+        tf.keras.layers.LSTM(256, return_sequences=True, activation='tanh'),
+        Dropout(0.2),
+        BatchNormalization(),
+        tf.keras.layers.LSTM(128, return_sequences=False, activation='tanh'),
+        Dropout(0.2),
+        BatchNormalization(),
+        Dense(128, activation='relu'),
+        Dense(num_classes, activation='softmax')
+    ])
+    model.compile(
+        optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
+        loss='sparse_categorical_crossentropy',
+        metrics=['accuracy']
+    )
+    return model
+
+def build_bigru_attention_model(input_shape, num_classes):
+    """
+    Định nghĩa kiến trúc mô hình nâng cấp: Bidirectional GRU + Multi-Head Self-Attention.
+    Giúp học quan hệ 2 chiều thời gian và tập trung vào các khung hình chứa cử chỉ bàn tay quan trọng.
+    Input shape: (MAX_FRAMES, NUM_POINTS, NUM_DIMS) hoặc (MAX_FRAMES, NUM_POINTS * NUM_DIMS)
+    """
+    if len(input_shape) == 2:
+        flattened_shape = input_shape
+    else:
+        flattened_shape = (input_shape[0], input_shape[1] * input_shape[2])
+
+    inputs = tf.keras.Input(shape=flattened_shape)
+    
+    # 1. Feature Projection & Embedding
+    x = tf.keras.layers.Dense(256, activation='relu')(inputs)
+    x = tf.keras.layers.LayerNormalization()(x)
+    x = tf.keras.layers.Dropout(0.2)(x)
+    
+    # 2. Bidirectional GRU Layer 1
+    x = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(128, return_sequences=True))(x)
+    x = tf.keras.layers.LayerNormalization()(x)
+    x = tf.keras.layers.Dropout(0.2)(x)
+    
+    # 3. Bidirectional GRU Layer 2
+    x = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(128, return_sequences=True))(x)
+    x = tf.keras.layers.LayerNormalization()(x)
+    
+    # 4. Multi-Head Self-Attention Layer (Tập trung vào các frame chứa nét ký hiệu trọng tâm)
+    attention_output = tf.keras.layers.MultiHeadAttention(num_heads=4, key_dim=64)(x, x)
+    x = tf.keras.layers.Add()([x, attention_output])
+    x = tf.keras.layers.LayerNormalization()(x)
+    
+    # 5. Global Temporal Pooling (Hợp nhất Pooling Trung bình và Pooling Cực đại)
+    avg_pool = tf.keras.layers.GlobalAveragePooling1D()(x)
+    max_pool = tf.keras.layers.GlobalMaxPooling1D()(x)
+    pooled = tf.keras.layers.Concatenate()([avg_pool, max_pool])
+    
+    # 6. Classifier Head
+    x = tf.keras.layers.Dense(256, activation='relu')(pooled)
+    x = tf.keras.layers.Dropout(0.3)(x)
+    outputs = tf.keras.layers.Dense(num_classes, activation='softmax')(x)
+    
+    model = tf.keras.Model(inputs=inputs, outputs=outputs, name="VSL_BiGRU_Attention")
+    
+    model.compile(
+        optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
+        loss='sparse_categorical_crossentropy',
+        metrics=['accuracy']
+    )
+    
+    return model
+
 def build_gru_model(input_shape, num_classes):
     """
-    Định nghĩa kiến trúc mô hình GRU cơ bản (Baseline).
-    Input shape: (MAX_FRAMES, NUM_POINTS, NUM_DIMS)
+    Định nghĩa kiến trúc mô hình GRU 3 lớp cơ bản (Baseline).
+    Giữ nguyên tương thích tuyệt đối với tập trọng số cũ vsl_gru_baseline.h5.
     """
-    # Vì GRU nhận input 2D cho mỗi frame, ta cần làm phẳng (flatten) tọa độ điểm
-    # Chuyển (MAX_FRAMES, NUM_POINTS, NUM_DIMS) -> (MAX_FRAMES, NUM_POINTS * NUM_DIMS)
-    flattened_shape = (input_shape[0], input_shape[1] * input_shape[2])
+    if len(input_shape) == 2:
+        flattened_shape = input_shape
+    else:
+        flattened_shape = (input_shape[0], input_shape[1] * input_shape[2])
     
     model = Sequential([
-        # GRU Layer 1
         GRU(128, return_sequences=True, activation='tanh', input_shape=flattened_shape),
         Dropout(0.2),
         BatchNormalization(),
         
-        # GRU Layer 2
         GRU(256, return_sequences=True, activation='tanh'),
         Dropout(0.2),
         BatchNormalization(),
         
-        # GRU Layer 3
         GRU(128, return_sequences=False, activation='tanh'),
         Dropout(0.2),
         BatchNormalization(),
         
-        # Lớp phân loại cuối cùng
         Dense(128, activation='relu'),
         Dense(num_classes, activation='softmax')
     ])
     
-    # Sử dụng Sparse Categorical Crossentropy vì nhãn (y) của chúng ta là dạng số (0, 1, 2...)
     model.compile(
         optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
         loss='sparse_categorical_crossentropy',
