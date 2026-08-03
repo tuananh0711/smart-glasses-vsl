@@ -268,7 +268,7 @@ def main():
     START_MOTION_THRESHOLD = 0.025 # Ngưỡng vận tốc bắt đầu ký hiệu
     END_MOTION_THRESHOLD = 0.010   # Ngưỡng vận tốc kết thúc ký hiệu
 
-    CONFIDENCE_THRESHOLD = 0.65    # Ngưỡng độ tự tin Top-1
+    CONFIDENCE_THRESHOLD = 0.55    # Hiệu chỉnh từ 0.65 -> 0.55 (Nhận diện tốt các từ như "Giàu" 55.5%)
     TOP1_TOP2_MARGIN = 0.12        # Khoảng cách tối thiểu Top-1 và Top-2 (12%)
 
     # Các biến quản lý State Machine
