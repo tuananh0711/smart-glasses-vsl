@@ -60,7 +60,9 @@ def speak_offline_text(text, enable_tts=True):
 # HÀM CẤU HÌNH & HÀM BỔ TRỢ
 # -----------------------------------------------------------------------------
 _BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DEFAULT_TFLITE_PATH = os.path.join(_BASE_DIR, 'models', 'vsl_bigru_attention.tflite')
+_DYNAMIC_MODEL = os.path.join(_BASE_DIR, 'models', 'vsl_bigru_attention_dynamic.tflite')
+_FP32_MODEL = os.path.join(_BASE_DIR, 'models', 'vsl_bigru_attention.tflite')
+DEFAULT_TFLITE_PATH = _DYNAMIC_MODEL if os.path.exists(_DYNAMIC_MODEL) else _FP32_MODEL
 CLASSES_PATH = os.path.join(_BASE_DIR, 'models', 'classes.json')
 
 MAX_FRAMES = 60
