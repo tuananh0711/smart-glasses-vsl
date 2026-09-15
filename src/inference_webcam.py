@@ -94,7 +94,7 @@ def draw_status_panel(image, word_text, sentence_text, status_text, conf_thresho
     )
     # Dòng 4: Hướng dẫn phím nóng (Xám sáng)
     return draw_vietnamese_text(
-        image, "Phím: [C] Xóa câu  |  [ [ / ] ] Đổi ngưỡng tin cậy  |  [Q] Thoát", (24, 138), 20, (200, 200, 200)
+        image, "Phím: [C] Xóa câu  |  [ [ / ] ] Đổi ngưỡng  |  [F] Lật camera  |  [Q] Thoát", (24, 138), 20, (200, 200, 200)
     )
 
 def draw_vietnamese_text(img, text, position, font_size=36, color=(0, 255, 0)):
@@ -225,6 +225,7 @@ def parse_args():
     parser.add_argument('--margin', type=float, default=0.02, help="Khoảng cách tối thiểu giữa Top 1 và Top 2 (Mặc định: 0.02 / 2%%)")
     parser.add_argument('--camera', type=int, default=0, help="ID Camera (Mặc định: 0)")
     parser.add_argument('--max_sentence', type=int, default=20, help="Số từ tối đa trong câu hiển thị (Mặc định: 20)")
+    parser.add_argument('--flip', action='store_true', help="Lật gương camera (Mặc định: Tắt để khớp 100%% với dữ liệu train AI)")
     return parser.parse_args()
 
 
@@ -232,6 +233,7 @@ def main():
     args = parse_args()
     conf_threshold = args.conf
     margin_threshold = args.margin
+    flip_mode = args.flip
 
     print("Đang tải từ điển...")
     try:
@@ -326,7 +328,8 @@ def main():
         if not ret:
             break
             
-        frame = cv2.flip(frame, 1)
+        if flip_mode:
+            frame = cv2.flip(frame, 1)
         raw_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         raw_rgb.flags.writeable = False
         results = holistic.process(raw_rgb)
@@ -515,6 +518,10 @@ def main():
             conf_threshold = min(0.95, round(conf_threshold + 0.02, 2))
             pipeline_status_text = f"ĐÃ TĂNG NGƯỠNG: {conf_threshold*100:.0f}%"
             print(f"⚙️ [CONFIG]: Ngưỡng tin cậy tăng lên: {conf_threshold*100:.1f}%")
+        elif key == ord('f') or key == ord('F'):
+            flip_mode = not flip_mode
+            pipeline_status_text = f"LẬT CAMERA: {'BẬT (Gương)' if flip_mode else 'TẮT (Chuẩn Train AI)'}"
+            print(f"🔄 [CAMERA]: Chế độ lật gương: {flip_mode}")
         if cv2.getWindowProperty(WINDOW_NAME, cv2.WND_PROP_VISIBLE) < 1:
             break
             
