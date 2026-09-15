@@ -16,7 +16,8 @@ temp_extract/
 # Các file model trọng số đã train (rất nặng)
 models/*.h5
 models/*.keras
-models/*.tflite
+# Cho phép mô hình TFLite tối ưu hóa siêu nhẹ cho Raspberry Pi Edge AI (< 5MB)
+!models/*.tflite
 
 # Thư mục log của hệ thống
 logs/

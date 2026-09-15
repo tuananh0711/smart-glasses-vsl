@@ -7,6 +7,7 @@ import tensorflow as tf
 import json
 import sys
 import glob
+import argparse
 from collections import deque
 sys.stdout.reconfigure(encoding='utf-8')
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -76,16 +77,24 @@ def maximize_window(window_name, fallback_width, fallback_height):
     return fallback_width, max(480, fallback_height - 90)
 
 
-def draw_status_panel(image, word_text, sentence_text, confirmation_text):
-    """Draw the three primary translation states in one readable panel."""
+def draw_status_panel(image, word_text, sentence_text, status_text, conf_threshold):
+    """Vẽ bảng trạng thái dịch: Từ hiện tại (giữ nguyên), Câu ghép (nối tiếp), và Tiến trình AI."""
     overlay = image.copy()
-    panel_height = min(170, image.shape[0])
+    panel_height = min(180, image.shape[0])
     cv2.rectangle(overlay, (0, 0), (image.shape[1], panel_height), (18, 18, 18), -1)
-    image = cv2.addWeighted(overlay, 0.68, image, 0.32, 0)
-    image = draw_vietnamese_text(image, f"Từ: {word_text}", (24, 14), 32, (0, 255, 255))
-    image = draw_vietnamese_text(image, f"Câu: {sentence_text}", (24, 62), 32, (0, 255, 0))
+    image = cv2.addWeighted(overlay, 0.72, image, 0.28, 0)
+    
+    # Dòng 1: Từ vừa nhận diện (Vàng chanh) - Giữ nguyên không bị mất
+    image = draw_vietnamese_text(image, f"Từ: {word_text}", (24, 12), 32, (0, 255, 255))
+    # Dòng 2: Câu ghép nối tiếp (Xanh lá) - Tự động nối tiếp các từ
+    image = draw_vietnamese_text(image, f"Câu: {sentence_text}", (24, 56), 32, (0, 255, 0))
+    # Dòng 3: Trạng thái hệ thống + Ngưỡng tin cậy (Vàng cam)
+    image = draw_vietnamese_text(
+        image, f"Trạng thái: {status_text} | Ngưỡng: {conf_threshold*100:.0f}%", (24, 102), 24, (255, 220, 80)
+    )
+    # Dòng 4: Hướng dẫn phím nóng (Xám sáng)
     return draw_vietnamese_text(
-        image, f"Xác định từ: {confirmation_text}", (24, 110), 28, (255, 220, 80)
+        image, "Phím: [C] Xóa câu  |  [ [ / ] ] Đổi ngưỡng tin cậy  |  [Q] Thoát", (24, 138), 20, (200, 200, 200)
     )
 
 def draw_vietnamese_text(img, text, position, font_size=36, color=(0, 255, 0)):
@@ -210,7 +219,20 @@ def compute_hand_motion(prev_kp, curr_kp):
     return float(np.median(diffs))
 
 
+def parse_args():
+    parser = argparse.ArgumentParser(description="Webcam Live Sign Language Inference & Sentence Builder")
+    parser.add_argument('--conf', type=float, default=0.10, help="Ngưỡng độ tin cậy tối thiểu để nhận diện từ (Mặc định: 0.10 / 10%%)")
+    parser.add_argument('--margin', type=float, default=0.02, help="Khoảng cách tối thiểu giữa Top 1 và Top 2 (Mặc định: 0.02 / 2%%)")
+    parser.add_argument('--camera', type=int, default=0, help="ID Camera (Mặc định: 0)")
+    parser.add_argument('--max_sentence', type=int, default=20, help="Số từ tối đa trong câu hiển thị (Mặc định: 20)")
+    return parser.parse_args()
+
+
 def main():
+    args = parse_args()
+    conf_threshold = args.conf
+    margin_threshold = args.margin
+
     print("Đang tải từ điển...")
     try:
         with open(CLASSES_PATH, 'r', encoding='utf-8') as f:
@@ -229,11 +251,11 @@ def main():
         print(f"❌ Lỗi tải mô hình: {e}")
         return
         
-    print("Mở Camera... (Sẵn sàng Picamera2 cho Raspberry Pi)")
+    print(f"Mở Camera {args.camera}... (Sẵn sàng Picamera2 cho Raspberry Pi)")
     if os.name == 'nt':
-        cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+        cap = cv2.VideoCapture(args.camera, cv2.CAP_DSHOW)
     else:
-        cap = cv2.VideoCapture(0)
+        cap = cv2.VideoCapture(args.camera)
 
     if not cap.isOpened():
         print("Không thể mở camera. Hãy đóng ứng dụng khác đang sử dụng webcam.")
@@ -268,10 +290,7 @@ def main():
     START_MOTION_THRESHOLD = 0.025 # Ngưỡng vận tốc bắt đầu ký hiệu
     END_MOTION_THRESHOLD = 0.010   # Ngưỡng vận tốc kết thúc ký hiệu
 
-    CONFIDENCE_THRESHOLD = 0.55    # Hiệu chỉnh từ 0.65 -> 0.55 (Nhận diện tốt các từ như "Giàu" 55.5%)
-    TOP1_TOP2_MARGIN = 0.12        # Khoảng cách tối thiểu Top-1 và Top-2 (12%)
-
-    # Các biến quản lý State Machine
+    # Các biến quản lý State Machine & Hiển thị từ/câu
     state = "IDLE"
     pre_roll_buffer = deque(maxlen=PRE_ROLL_FRAMES)
     gesture_buffer = []
@@ -284,9 +303,9 @@ def main():
     smoothed_motion = 0.0
     prev_keypoints = None
     
-    sentence_list = deque(maxlen=5)
-    word_text_display = "(Chờ đưa tay lên ký hiệu...)"
-    confirmation_text = "Trạng thái: CHỜ KÝ HIỆU (IDLE)"
+    sentence_list = deque(maxlen=args.max_sentence)
+    last_word_display = "(Chờ ký hiệu...)"
+    pipeline_status_text = "CHỜ KÝ HIỆU (IDLE)"
 
     def reset_segmentation_state():
         """Reset sạch toàn bộ bộ nhớ phân đoạn để tránh ô nhiễm chuỗi giữa 2 từ."""
@@ -363,7 +382,7 @@ def main():
             arming_counter = 0
             smoothed_motion = 0.0
             prev_keypoints = None
-            confirmation_text = "Trạng thái: COOLDOWN (Chờ sẵn sàng)"
+            pipeline_status_text = "COOLDOWN (Sẵn sàng đón từ tiếp theo)"
         
         elif state == "IDLE":
             pre_roll_buffer.append(keypoints)
@@ -371,40 +390,39 @@ def main():
             if pre_roll_ready and is_hands_present and smoothed_motion > START_MOTION_THRESHOLD:
                 state = "ARMING"
                 arming_counter = 1
-                word_text_display = "(Phát hiện chuyển động...)"
-                confirmation_text = "Trạng thái: ARMING (Xác nhận chuyển động)"
+                pipeline_status_text = "ARMING (Phát hiện chuyển động...)"
                 print("🟡 [STATE]: IDLE -> ARMING (Phát hiện chuyển động)")
             else:
                 arming_counter = 0
                 if not pre_roll_ready:
-                    word_text_display = f"(Đang nạp đệm tiền động tác {len(pre_roll_buffer)}/{PRE_ROLL_FRAMES}...)"
-                    confirmation_text = f"Trạng thái: IDLE (Warm-up Pre-roll {len(pre_roll_buffer)}/{PRE_ROLL_FRAMES})"
+                    pipeline_status_text = f"IDLE (Chuẩn bị bộ đệm {len(pre_roll_buffer)}/{PRE_ROLL_FRAMES})"
                 else:
-                    word_text_display = "(Chờ đưa tay lên ký hiệu...)"
-                    confirmation_text = "Trạng thái: CHỜ KÝ HIỆU (IDLE)"
+                    pipeline_status_text = "CHỜ KÝ HIỆU (Đưa tay lên để bắt đầu)"
 
         elif state == "ARMING":
             pre_roll_buffer.append(keypoints)
             if is_hands_present and smoothed_motion > START_MOTION_THRESHOLD:
                 arming_counter += 1
+                pipeline_status_text = f"ARMING (Xác nhận chuyển động {arming_counter}/{START_CONFIRM_FRAMES})"
                 if arming_counter >= START_CONFIRM_FRAMES:
                     state = "RECORDING"
                     gesture_buffer = list(pre_roll_buffer)
                     arming_counter = 0
                     still_counter = 0
                     missing_hands_counter = 0
+                    pipeline_status_text = "RECORDING (Bắt đầu thu ký hiệu)"
                     print("🎬 [STATE]: ARMING -> RECORDING (Đã xác nhận, bắt đầu thu ký hiệu)")
             else:
                 # Chuyển động bị hủy giữa chừng -> Quay về IDLE
                 state = "IDLE"
                 arming_counter = 0
+                pipeline_status_text = "CHỜ KÝ HIỆU (Hủy ARMING do dừng cử chỉ)"
                 print("⚪ [STATE]: ARMING -> IDLE (Chuyển động không đủ dài, hủy ARMING)")
 
         elif state == "RECORDING":
             gesture_buffer.append(keypoints)
             progress_pct = min(100, int(len(gesture_buffer) / MAX_GESTURE_FRAMES * 100))
-            word_text_display = f"Đang thu ký hiệu... [{len(gesture_buffer)} frames]"
-            confirmation_text = f"Trạng thái: RECORDING ({progress_pct}%)"
+            pipeline_status_text = f"ĐANG THU KÝ HIỆU... [{len(gesture_buffer)} frames - {progress_pct}%]"
 
             if not is_hands_present:
                 missing_hands_counter += 1
@@ -441,7 +459,7 @@ def main():
                     print(f"🎯 [STATE]: RECORDING -> FINALIZING (Chốt thu {len(gesture_buffer)} frames sau khi Trim)")
 
         if state == "FINALIZING":
-            confirmation_text = "Trạng thái: FINALIZING (Đang phân tích AI...)"
+            pipeline_status_text = "FINALIZING (Đang phân tích AI...)"
             
             # Resampling và Zero-padding khớp 100% với preprocess.py
             sequence_60 = temporal_resample_and_pad(gesture_buffer, MAX_FRAMES)
@@ -458,17 +476,16 @@ def main():
             margin = c1 - c2
             word = class_names[best_idx]
 
-            # Kiểm tra 3 điều kiện nghiệm thu
-            if c1 >= CONFIDENCE_THRESHOLD and margin >= TOP1_TOP2_MARGIN:
-                if len(sentence_list) == 0 or sentence_list[-1] != word:
-                    sentence_list.append(word)
-                word_text_display = f"[{word}] ({c1*100:.1f}%)"
-                confirmation_text = f"✅ ĐÃ XÁC NHẬN: [{word}] (Conf: {c1*100:.1f}%, Margin: {margin*100:.1f}%)"
-                print(f"✅ [DỰ ĐOÁN THÀNH CÔNG]: {word} | Conf: {c1*100:.1f}% | Margin: {margin*100:.1f}% | Frames: {T}")
+            # Kiểm tra điều kiện nghiệm thu
+            if c1 >= conf_threshold and margin >= margin_threshold:
+                sentence_list.append(word)
+                last_word_display = f"{word} ({c1*100:.1f}%)"
+                pipeline_status_text = f"✅ ĐÃ NHẬN DIỆN: [{word}] ({c1*100:.1f}%)"
+                print(f"✅ [DỰ ĐOÁN THÀNH CÔNG]: {word} | Conf: {c1*100:.1f}% | Margin: {margin*100:.1f}% | Frames: {T} | Câu: {' '.join(sentence_list)}")
             else:
-                word_text_display = f"({word}? {c1*100:.1f}%)"
-                confirmation_text = f"⚠️ CHƯA CHẮC CHẮN: {word} (Conf: {c1*100:.1f}%, Margin: {margin*100:.1f}%)"
-                print(f"⚠️ [CHƯA CHẮC CHẮN]: {word} | Conf: {c1*100:.1f}% | Margin: {margin*100:.1f}%")
+                last_word_display = f"{word} ({c1*100:.1f}% - Thấp)"
+                pipeline_status_text = f"⚠️ CHƯA ĐỦ TIN CẬY: {word} ({c1*100:.1f}% < {conf_threshold*100:.0f}%)"
+                print(f"⚠️ [CHƯA CHẮC CHẮN]: {word} | Conf: {c1*100:.1f}% | Margin: {margin*100:.1f}% (Cần >= {conf_threshold*100:.0f}%)")
 
             # Reset sạch bộ nhớ phân đoạn để đón từ tiếp theo
             reset_segmentation_state()
@@ -476,7 +493,7 @@ def main():
         # Hiển thị giao diện
         image = resize_to_fill(image, window_width, window_height)
         display_sentence = " ".join(sentence_list) or "(Chưa có từ)"
-        image = draw_status_panel(image, word_text_display, display_sentence, confirmation_text)
+        image = draw_status_panel(image, last_word_display, display_sentence, pipeline_status_text, conf_threshold)
 
         cv2.imshow(WINDOW_NAME, image)
         if hasattr(cv2, 'WND_PROP_TOPMOST'):
@@ -485,6 +502,19 @@ def main():
         key = cv2.waitKey(10) & 0xFF
         if key == ord('q'):
             break
+        elif key == ord('c') or key == ord('C'):
+            sentence_list.clear()
+            last_word_display = "(Đã xóa câu)"
+            pipeline_status_text = "ĐÃ XÓA CÂU (Bắt đầu câu mới)"
+            print("🧹 [RESET]: Đã xóa toàn bộ câu hiện tại.")
+        elif key == ord('['):
+            conf_threshold = max(0.02, round(conf_threshold - 0.02, 2))
+            pipeline_status_text = f"ĐÃ GIẢM NGƯỠNG: {conf_threshold*100:.0f}%"
+            print(f"⚙️ [CONFIG]: Ngưỡng tin cậy giảm xuống: {conf_threshold*100:.1f}%")
+        elif key == ord(']'):
+            conf_threshold = min(0.95, round(conf_threshold + 0.02, 2))
+            pipeline_status_text = f"ĐÃ TĂNG NGƯỠNG: {conf_threshold*100:.0f}%"
+            print(f"⚙️ [CONFIG]: Ngưỡng tin cậy tăng lên: {conf_threshold*100:.1f}%")
         if cv2.getWindowProperty(WINDOW_NAME, cv2.WND_PROP_VISIBLE) < 1:
             break
             
