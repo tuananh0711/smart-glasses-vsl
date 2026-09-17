@@ -472,12 +472,15 @@ def main():
             input_data = np.reshape(input_data, (1, MAX_FRAMES, NUM_POINTS * NUM_DIMS))
 
             res = model.predict(input_data, verbose=0)[0]
-            top_idxs = np.argsort(res)[-2:][::-1]
+            top_idxs = np.argsort(res)[-5:][::-1]
 
             best_idx, second_idx = top_idxs[0], top_idxs[1]
             c1, c2 = res[best_idx], res[second_idx]
             margin = c1 - c2
             word = class_names[best_idx]
+
+            top5_str = " | ".join([f"{class_names[i]}: {res[i]*100:.1f}%" for i in top_idxs])
+            print(f"📊 [TOP 5]: {top5_str}")
 
             # Kiểm tra điều kiện nghiệm thu
             if c1 >= conf_threshold and margin >= margin_threshold:
