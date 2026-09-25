@@ -29,7 +29,7 @@ Dự án nghiên cứu và phát triển một hệ thống **Kính Mắt Thông
 * **🧠 Mô hình Học sâu BiGRU Attention Siêu nhẹ:**
   * Tiếp nhận chuỗi đặc trưng thời gian (Sliding Window 60 frames/từ).
   * Ứng dụng mạng nơ-ron hồi quy **Bidirectional GRU** kết hợp cơ chế **Multi-Head Self-Attention** giúp mô hình tập trung vào các thời điểm thực hiện nét ký hiệu quan trọng nhất.
-  * Nhận diện bộ từ điển **473 từ vựng VSL** thông dụng (`data/classes.json`).
+  * Nhận diện bộ từ điển **473 từ vựng VSL** thông dụng (`models/classes.json`).
   * Đã tối ưu hóa lượng tử hóa Dynamic Range sang **TensorFlow Lite (`.tflite`)**, nén kích thước mô hình xuống chỉ còn **~1.20 MB**, tải tensor cực nhanh và suy luận mượt mà trên CPU ARM của Raspberry Pi.
 * **🗣️ Máy Trạng Thái 4 Pha & Xây Dựng Câu Tự Nhiên (Sentence Builder):**
   * Tích hợp máy trạng thái 4 pha (`IDLE -> ARMING -> RECORDING -> FINALIZING -> COOLDOWN`) tự động phát hiện chuyển động bắt đầu ký và thời điểm buông tay nghỉ.
@@ -106,9 +106,8 @@ do_an_tot_nghiep/
 │   ├── vsl_bigru_attention_dynamic.tflite # Mô hình TFLite lượng tử hóa siêu nhẹ (1.20 MB) - Cho Pi
 │   ├── vsl_bigru_attention.tflite     # Mô hình TFLite FP32 (4.46 MB)
 │   ├── vsl_gru_baseline.h5            # Trọng số baseline GRU
-│   └── classes.json                   # Danh mục 473 nhãn từ vựng tiếng Việt
+│   └── classes.json                   # Từ điển mapping 473 nhãn từ vựng tiếng Việt (Nguồn chuẩn duy nhất)
 ├── data/                              # Dữ liệu phục vụ huấn luyện và kiểm thử
-│   ├── classes.json                   # Từ điển mapping index sang từ vựng
 │   ├── keypoints_splited/             # Tập keypoints train/test đã phân chia
 │   └── my_preprocessed/               # Dữ liệu đặc trưng trích xuất tạm thời
 ├── docs/                              # Tài liệu kỹ thuật chi tiết đồ án
@@ -232,8 +231,8 @@ Theo quy chuẩn tài liệu của dự án, các tính năng được phân lo�
 | **Phần cứng Kính** | Camera góc rộng 120° CSI OV5647 | **Need Verification** | Đã test trên Webcam PC; chờ nghiệm thu trên khung kính |
 | | Kính không có màn hình (ADR-004) | **Implemented** | Loại bỏ HUD để giảm nhiệt, điện năng và khối lượng |
 | | Đầu ra giọng nói qua Loa tích hợp (Offline TTS) | **Implemented** | Tích hợp engine `pyttsx3` trong `inference_pi_tflite.py` |
-| **Companion App** | Giao diện Android Jetpack Compose hiển thị phụ đề | **Implemented** | Kiến trúc MVVM, WebSocket Client |
-| | Đồng bộ dữ liệu qua WebSocket nội bộ không Internet | **Implemented** | Kết nối mạng cục bộ do Pi phát Hotspot |
+| **Companion App** | Giao diện Android Jetpack Compose hiển thị phụ đề | **Planned** | Thiết kế hoàn tất (docs/04_Android), chờ triển khai source code |
+| | Đồng bộ dữ liệu qua WebSocket nội bộ không Internet | **Planned** | Kết nối mạng cục bộ do Pi phát Hotspot |
 
 ---
 

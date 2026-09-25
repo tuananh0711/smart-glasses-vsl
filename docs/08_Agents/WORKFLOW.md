@@ -1,29 +1,32 @@
-# Workflow phối hợp Codex, Antigravity và Android Studio Agent
+# Workflow phối hợp Antigravity, Kilo Code và Android Studio Agent
 
 > Trạng thái: **Implemented**  
-> Cập nhật: 2026-07-19
+> Cập nhật: 2026-09-21
 
 ## Mục tiêu
 
-Giúp ba agent cùng làm việc trên một repository mà không trùng nhiệm vụ, ghi đè source, tự thay đổi kiến trúc hoặc báo hoàn thành thiếu bằng chứng.
+Giúp các AI agent cùng làm việc trên một repository mà không trùng nhiệm vụ, ghi đè source, tự thay đổi kiến trúc hoặc báo hoàn thành thiếu bằng chứng.
 
-Nguyên tắc trung tâm là **mỗi task chỉ có một agent được phép sửa source tại một thời điểm**. Hai agent còn lại chỉ review, kiểm tra hoặc chuẩn bị nhiệm vụ không đụng vào cùng file.
+Nguyên tắc trung tâm là **mỗi task chỉ có một agent được phép sửa source tại một thời điểm**. Agent còn lại đóng vai trò độc lập review, kiểm tra hoặc chuẩn bị nhiệm vụ không đụng vào cùng file.
 
 ## Phạm vi
 
-Workflow áp dụng cho toàn bộ Android, Raspberry Pi, AI, API, testing và documentation. Trong giai đoạn app-first, Android Studio Agent là người triển khai Android mặc định; Codex quản lý kiến trúc/tài liệu/task; Antigravity review độc lập.
+Workflow áp dụng cho toàn bộ Android, Raspberry Pi, AI pipeline, API, testing và documentation:
+- **Antigravity**: Đóng vai trò là Planner & Implementer cho hệ thống (Core AI, Raspberry Pi, Backend/Nhúng, tạo Task Card, code và chạy kiểm thử nội bộ QC-1).
+- **Kilo Code**: Đóng vai trò là Independent Reviewer & QA (Thẩm định độc lập, chạy lệnh kiểm tra, đối chiếu các điều cấm DO NOTs và xuất `qc_report.md`).
+- **Android Studio Agent**: Triển khai chuyên biệt cho ứng dụng Android Companion App.
 
 ## Kiến trúc
 
-### Vai trò mặc định
+### Phân định vai trò
 
-| Agent | Vai trò chính | Được sửa gì | Không nên làm đồng thời |
+| Agent | Vai trò chính | Được sửa gì | Không nên làm / Giới hạn |
 |---|---|---|---|
-| Codex | Lead Architect + Task Coordinator | Docs, ADR, API contract; source khi được giao riêng | Không sửa cùng source file khi Android Studio Agent đang code |
-| Android Studio Agent | Primary Android Implementer | Gradle, Kotlin, Compose, resources, Android tests | Không tự đổi ADR/API/Edge AI boundary |
-| Antigravity | Independent Reviewer + QA | Review, static analysis, test proposal; chỉ sửa khi task chuyển quyền | Không refactor trong lúc Android Studio Agent chưa bàn giao |
+| **Antigravity** | **Planner & Implementer** | Tạo Task Card, viết code Raspberry Pi/AI/Backend, docs, ADR, sửa code và test nội bộ QC-1 | Không bỏ qua bước bàn giao kiểm thử độc lập cho Kilo Code |
+| **Kilo Code** | **Independent Reviewer & QA** | Thẩm định độc lập qua `agent_for_kilo.md`, chạy lệnh test/lint, ghi nhận xét vào `qc_report.md` | Không tự ý can thiệp sửa trực tiếp source code khi đang trong lượt review của task |
+| **Android Studio Agent** | **Primary Android Implementer** | Gradle, Kotlin, Compose, resources, Android unit/instrumented tests | Không tự đổi ADR/API contract hoặc vi phạm ranh giới Edge AI |
 
-Codex có quyền code, nhưng trong workflow app-first nên giữ Codex ở vai trò kiến trúc và review cuối để tránh hai người cùng viết Android.
+---
 
 ### Nguồn trạng thái task
 
@@ -36,12 +39,14 @@ docs/08_Agents/tasks/TASK-<số>-<tên-ngắn>.md
 File này là nơi duy nhất ghi:
 
 - Mục tiêu task.
-- Agent đang sở hữu task.
-- File được phép sửa.
-- File không được sửa.
-- Acceptance criteria.
-- Lệnh build/test bắt buộc.
+- Agent đang sở hữu task (Owner: Antigravity / Android Studio Agent).
+- File được phép sửa (`Allowed scope`).
+- File không được sửa (`Forbidden scope`).
+- Tiêu chuẩn nghiệm thu (`Acceptance Criteria`).
+- Lệnh build/test bắt buộc (`Verification commands`).
 - Kết quả bàn giao và review.
+
+---
 
 ### Trạng thái task
 
@@ -60,133 +65,67 @@ stateDiagram-v2
 
 Ý nghĩa:
 
-- `READY`: phạm vi và acceptance đã rõ, chưa có agent code.
-- `IN_PROGRESS`: chỉ Owner được sửa các file trong scope.
-- `READY_FOR_REVIEW`: Owner dừng sửa và bàn giao bằng chứng.
-- `CHANGES_REQUESTED`: Reviewer nêu lỗi cụ thể; Owner sửa tiếp.
-- `VERIFIED`: build/test/review đạt.
-- `DONE`: Codex cập nhật docs/trạng thái và đóng task.
-- `BLOCKED`: có blocker có bằng chứng; không dùng cho việc đơn thuần chưa xong.
+- `READY`: Phạm vi và acceptance criteria đã rõ ràng, chưa có agent code.
+- `IN_PROGRESS`: Chỉ Owner được sửa các file trong scope.
+- `READY_FOR_REVIEW`: Owner hoàn tất code + test nội bộ QC-1, tạo file `agent_for_kilo.md` và dừng sửa.
+- `CHANGES_REQUESTED`: Kilo Code phát hiện lỗi, ghi vào `qc_report.md` (FAIL); Owner sửa tiếp.
+- `VERIFIED`: Kilo Code kiểm tra đạt toàn bộ, ghi `PASS` vào `qc_report.md`.
+- `DONE`: Cập nhật docs/trạng thái hoàn thành và đóng task.
+- `BLOCKED`: Có vấn đề nghẽn cần sự can thiệp từ người dùng.
 
-## Luồng hoạt động
+---
 
-### Bước 1 — Codex tạo task
+## Luồng hoạt động chi tiết
 
-Codex đọc roadmap/implementation plan và tạo một task đủ nhỏ, thường tương ứng một phase hoặc một vertical slice. Task phải ghi rõ Owner, Reviewer, file scope và Definition of Done.
+### Bước 1 — Antigravity lập kế hoạch & Tạo Task Card (Planner)
+- Antigravity phân tích yêu cầu từ người dùng, tạo hoặc tham chiếu Task Card chuẩn trong `docs/08_Agents/tasks/` theo `TASK_TEMPLATE.md`.
+- Xác định rõ `Allowed scope`, `Forbidden scope` và tiêu chí nghiệm thu (`Acceptance Criteria`).
 
-Ví dụ cho Phase 0:
+### Bước 2 — Triển khai mã nguồn & QC-1 Nội bộ (Implementer)
+- Antigravity (hoặc Android Studio Agent đối với app Android) tiến hành code đúng trong phạm vi cho phép.
+- Chạy các câu lệnh kiểm thử tự động (pytest, build, lint...) và ghi nhận kết quả.
+- Đạt kiểm thử nội bộ **QC-1 First**.
 
-```text
-Owner: Android Studio Agent
-Reviewer: Antigravity
-Architect/Approver: Codex
-Allowed scope: Androi_App/** và docs Android liên quan
-Forbidden: source Pi, AI architecture, MQTT/TFLite dependency
-```
+### Bước 3 — Bàn giao kiểm thử sang Kilo Code
+- Antigravity tạo/cập nhật file [agent_for_kilo.md](file:///d:/do_an_tot_nghiep/agent_for_kilo.md) ở thư mục gốc chứa:
+  - Danh sách các file vừa sửa.
+  - Tóm tắt thay đổi và mục tiêu.
+  - Hướng dẫn cụ thể để Kilo Code thẩm định độc lập.
+- Antigravity tự động kích hoạt Kilo CLI chạy ngầm (`kilo.exe run`) để chuyển giao task thẩm định mà không cần người dùng thao tác thủ công.
 
-### Bước 2 — Android Studio Agent triển khai
+### Bước 4 — Kilo Code thẩm định độc lập & QA (Reviewer)
+- Kilo Code đọc `agent_for_kilo.md`, thực thi kiểm tra độc lập:
+  - Kiểm tra logic, lỗi tiềm ẩn, edge cases, bảo mật, định dạng.
+  - Đối chiếu danh sách các điều cấm (**DO NOTs**): Ranh giới Edge AI (kính không màn hình ADR-004, RPi xử lý 100% offline ADR-001, không chuyển AI sang Android).
+  - Chạy lệnh test kiểm chứng nếu cần.
+- Kilo Code ghi kết quả đánh giá vào [qc_report.md](file:///d:/do_an_tot_nghiep/qc_report.md):
+  - Nếu **FAIL**: Ghi rõ file lỗi, loại lỗi, nguyên nhân và đề xuất khắc phục.
+  - Nếu **PASS**: Ghi đúng một chữ `PASS`.
 
-Agent phải:
+### Bước 5 — Nghiệm thu, Báo cáo & Hoàn tất (Giới hạn 1 Chu kỳ)
+- Antigravity đọc kết quả trong `qc_report.md`:
+  - Nếu là `PASS`: Task chính thức hoàn thành và đóng task (`DONE`).
+  - Nếu là `FAIL`: Antigravity phân tích nguyên nhân lỗi, đưa ra giải pháp đề xuất và báo cáo chi tiết cho Người dùng duyệt.
+- **Giới hạn chu kỳ:** Chu kỳ khép kín dừng lại tại đây để Người dùng xem xét, tránh vòng lặp phản biện vô tận.
 
-1. Đọc `AGENTS.md`, task handoff và tài liệu được task chỉ định.
-2. Kiểm tra trạng thái source trước khi sửa.
-3. Chỉ sửa file trong allowed scope.
-4. Chạy build/test/lint đã quy định.
-5. Ghi danh sách file sửa, quyết định kỹ thuật và kết quả lệnh vào task handoff.
-6. Chuyển trạng thái sang `READY_FOR_REVIEW` rồi dừng sửa.
+---
 
-### Bước 3 — Antigravity review
+## Quy tắc chuyển Owner
 
-Antigravity không sửa source ở lượt review đầu. Reviewer kiểm tra:
+Nếu muốn chuyển quyền sửa code giữa các Agent:
+1. Owner hiện tại phải dừng sửa và lưu trạng thái rõ ràng.
+2. Cập nhật trường `Owner` trong Task Card.
+3. Ghi rõ commit/file state hoặc danh sách thay đổi.
+4. Agent mới tiếp nhận đọc kỹ handoff trước khi thực thi.
 
-- Build/test evidence có thật và đủ không.
-- Code có đúng task, architecture và Android conventions không.
-- Có đưa AI/TTS chính/Sentence Builder nhầm sang Android không.
-- Có hard-code IP, telemetry hoặc mock data vào production không.
-- State, lifecycle, coroutine, error và accessibility có ổn không.
-- Có file ngoài scope bị sửa không.
+Tuyệt đối không gửi cùng một prompt sửa code cho cả hai agent cùng lúc.
 
-Nếu có lỗi, ghi từng lỗi với file/dòng/mức độ và chuyển `CHANGES_REQUESTED`. Không tự refactor thay Owner.
-
-### Bước 4 — Android Studio Agent sửa review
-
-Owner chỉ xử lý các comment đã xác nhận, chạy lại toàn bộ verification và bàn giao lần nữa. Không mở rộng feature trong lượt sửa review.
-
-### Bước 5 — Codex nghiệm thu
-
-Codex kiểm tra:
-
-- Acceptance criteria.
-- Boundary Edge AI và ADR.
-- API/schema/documentation consistency.
-- Kết quả build/test cuối cùng.
-- Trạng thái `Planned`, `Implemented`, `Need Verification` có đúng bằng chứng.
-
-Sau đó Codex cập nhật docs/roadmap và chuyển task `DONE`.
-
-### Quy tắc chuyển Owner
-
-Nếu muốn Codex hoặc Antigravity trực tiếp sửa code:
-
-1. Owner hiện tại phải dừng và bàn giao.
-2. Task handoff đổi trường `Owner`.
-3. Ghi rõ commit/file state hoặc danh sách thay đổi chưa commit.
-4. Owner mới đọc lại handoff trước khi sửa.
-
-Không được gửi cùng một prompt code cho hai agent cùng lúc.
-
-## Ví dụ
-
-Workflow Phase 0 Android:
-
-```text
-Codex
-  -> tạo TASK-001, giao Android Studio Agent sửa Gradle/MainActivity
-
-Android Studio Agent
-  -> sửa source
-  -> chạy assembleDebug, test, lint
-  -> ghi evidence
-  -> READY_FOR_REVIEW
-
-Antigravity
-  -> review toolchain, manifest, source và test
-  -> CHANGES_REQUESTED hoặc VERIFIED
-
-Codex
-  -> kiểm tra boundary/docs
-  -> cập nhật IMPLEMENTATION_PLAN
-  -> DONE
-```
-
-Prompt ngắn dùng cho mọi agent:
-
-```text
-Trước khi làm việc, đọc AGENTS.md và file task handoff được giao.
-Chỉ làm đúng vai trò Owner/Reviewer/Approver ghi trong task.
-Không sửa file ngoài Allowed scope.
-Không bắt đầu nếu task đang IN_PROGRESS bởi agent khác.
-Mọi kết quả phải kèm lệnh build/test và bằng chứng cụ thể.
-```
-
-## Ghi chú triển khai
-
-- Dùng một task nhỏ cho mỗi phase; không dùng task “xây toàn bộ app”.
-- Nếu không dùng Git branch riêng, quy tắc single-writer càng bắt buộc.
-- Không đánh dấu `DONE` chỉ vì UI nhìn đẹp; phải đạt acceptance và test.
-- Mock/Fake implementation chỉ chứng minh app layer; không được dùng để đánh dấu Pi/API production là `Implemented`.
-- Khi Agent phát hiện yêu cầu mới, ghi đề xuất vào handoff. Chỉ Codex/ADR mới được đổi kiến trúc chính thức.
-- Người dùng là người có quyền quyết định cuối cùng; xác nhận của người dùng phải được Codex ghi lại trong ADR/docs.
+---
 
 ## Tài liệu liên quan
 
+- [../../agent_for_kilo.md](../../agent_for_kilo.md)
+- [../../AGENTS.md](../../AGENTS.md)
 - [../../AGENT_START.md](../../AGENT_START.md)
 - [TASK_QUEUE.md](TASK_QUEUE.md)
 - [TASK_TEMPLATE.md](TASK_TEMPLATE.md)
-- [SESSION_START_PROMPTS.md](SESSION_START_PROMPTS.md)
-- [PROMPT_LIBRARY.md](PROMPT_LIBRARY.md)
-- [CODEX.md](CODEX.md)
-- [ANTIGRAVITY.md](ANTIGRAVITY.md)
-- [GEMINI.md](GEMINI.md)
-- [../04_Android/IMPLEMENTATION_PLAN.md](../04_Android/IMPLEMENTATION_PLAN.md)
-- [../00_Project/README.md](../00_Project/README.md)

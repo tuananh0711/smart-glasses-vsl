@@ -1,8 +1,10 @@
 # BÁO CÁO KIỂM THỬ CAMERA & GUI (QC)
 
+> ⚠️ **LƯU Ý PHẠM VI**: Báo cáo này **CHỈ** kiểm tra tính khả dụng của Camera phần cứng, vòng lặp OpenCV GUI và MediaPipe không bị đóng băng. Báo cáo **KHÔNG** đo lường hay đánh giá độ chính xác nhận diện từ vựng (Accuracy). Phép đo độ chính xác được thực hiện riêng biệt tại `src/eval_segmentation.py` và `qc_report.md`.
+
 ## Kết luận
 
-**PASS** — Không phát hiện lỗi vận hành camera, GUI OpenCV hoặc đóng băng luồng MediaPipe trong môi trường kiểm thử hiện tại. Không sửa đổi `src/inference_webcam.py`.
+**PASS (Phạm vi Hẹp: Camera & GUI)** — Không phát hiện lỗi vận hành camera, GUI OpenCV hoặc đóng băng luồng MediaPipe trong môi trường kiểm thử hiện tại.
 
 ## Môi trường và phạm vi
 

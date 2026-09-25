@@ -1,20 +1,20 @@
-# Quy tắc 1: Bàn giao Kiểm thử Codex Bên ngoài (External Codex Handoff)
+# Quy tắc 1: Bàn giao Kiểm thử Kilo Code Bên ngoài (External Kilo Code Handoff)
 
 Khi một task có liên quan đến việc lập trình, sửa code hoặc viết tài liệu, hãy tuân thủ quy trình sau cho giai đoạn kiểm thử cuối cùng:
 
 1. **Kiểm thử Nội bộ Trước (Internal QC First)**: Đảm bảo công việc đã vượt qua sự kiểm tra của subagent `QC-1` nội bộ trước.
-2. **Tạo file agent_for_codex.md**: Sau khi vượt qua QC-1 nội bộ, LUÔN LUÔN ghi hướng dẫn bàn giao vào file `D:\do_an_tot_nghiep\agent_for_codex.md`.
-3. **Yêu cầu đối với agent_for_codex.md**: File BẮT BUỘC phải chứa:
+2. **Tạo file agent_for_kilo.md**: Sau khi vượt qua QC-1 nội bộ, LUÔN LUÔN ghi hướng dẫn bàn giao vào file `D:\do_an_tot_nghiep\agent_for_kilo.md`.
+3. **Yêu cầu đối với agent_for_kilo.md**: File BẮT BUỘC phải chứa:
    - Danh sách các file cụ thể vừa được chỉnh sửa.
    - Tóm tắt ngắn gọn nội dung đã thay đổi và mục tiêu.
-   - Hướng dẫn rõ ràng để Codex IDE bên ngoài:
+   - Hướng dẫn rõ ràng để Kilo Code bên ngoài:
      - Kiểm tra các file đã sửa để tìm lỗi logic, lỗ hổng bảo mật, các trường hợp biên (edge cases) và lỗi định dạng.
      - Đánh giá độc lập mà không tin tưởng tuyệt đối vào kết quả pass của QC-1.
      - Ghi kết quả đánh giá vào file `qc_report.md`.
      - Nếu FAIL: Ghi rõ file lỗi, loại lỗi, lý do và cách khắc phục.
      - Nếu PASS: Chỉ cần ghi "PASS" vào `qc_report.md`.
-4. **Thông báo cho Người dùng**: Thông báo cho người dùng rằng file `agent_for_codex.md` đã sẵn sàng để họ kích hoạt Codex IDE tiến hành QC cuối cùng.
-5. **Đánh giá Kết quả Cuối cùng**: Khi người dùng phản hồi kết quả từ Codex, đọc file `qc_report.md`. Nếu ghi "PASS", task hoàn thành thành công. Nếu FAIL, tiến hành sửa lỗi và lặp lại quy trình.
+4. **Tự động kích hoạt Kilo Code (Automated Kilo Trigger)**: Antigravity tự động kích hoạt Kilo CLI chạy ngầm (`kilo.exe run`) để đọc `agent_for_kilo.md`, tiến hành thẩm định và ghi kết quả vào `qc_report.md`.
+5. **Đánh giá và Báo cáo (1 Chu kỳ khép kín)**: Khi Kilo hoàn tất, Antigravity tự động đọc `qc_report.md`, trích xuất kết quả đánh giá của Kilo, đưa ra phương án xử lý và báo cáo tổng kết đầy đủ cho Người dùng. Chu kỳ dừng lại tại đây để Người dùng xem xét (giới hạn đúng 1 chu kỳ, tránh vòng lặp vô tận).
 
 # Quy tắc 2: Ranh giới Kiến trúc Edge AI (Edge AI Boundary)
 

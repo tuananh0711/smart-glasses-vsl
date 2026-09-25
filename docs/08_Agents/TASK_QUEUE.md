@@ -1,8 +1,8 @@
 # Hàng đợi nhiệm vụ đa Agent
 
-> Trạng thái: **Implemented**  
-> Cập nhật: 2026-07-19  
-> Active task: `TASK-005-ANDROID-HISTORY`
+> Trạng thái: **Planned** (Tài liệu kiến trúc đã có, mã nguồn Android chưa commit vào repo)  
+> Cập nhật: 2026-09-23  
+> Active task: `TASK-013-STATE-MACHINE-ACCURACY-RESTORE`
 
 ## Mục tiêu
 
@@ -18,11 +18,11 @@ Hàng đợi hiện bao phủ kế hoạch Android app-first. Mỗi task chỉ �
 
 | Thứ tự | Task | Nội dung | Owner | Reviewer | Trạng thái |
 |---:|---|---|---|---|---|
-| 1 | TASK-001 | Android Phase 0 — Build foundation | Android Studio Agent | Antigravity | Completed: `DONE` |
-| 2 | TASK-002 | App shell, navigation, design system | Android Studio Agent | Antigravity | Completed: `DONE` |
-| 3 | TASK-003 | Realtime MVP bằng FakeRepository | Android Studio Agent | Antigravity | Completed: `DONE` |
-| 4 | TASK-004 | JSON contract và WebSocket integration | Android Studio Agent | Antigravity | Completed: `DONE` |
-| 5 | TASK-005 | History và local persistence | Android Studio Agent | Antigravity | Active: `READY` |
+| 1 | TASK-001 | Android Phase 0 — Build foundation | Android Studio Agent | Antigravity | **Planned** (Docs ready, no source) |
+| 2 | TASK-002 | App shell, navigation, design system | Android Studio Agent | Antigravity | **Planned** (Docs ready, no source) |
+| 3 | TASK-003 | Realtime MVP bằng FakeRepository | Android Studio Agent | Antigravity | **Planned** (Docs ready, no source) |
+| 4 | TASK-004 | JSON contract và WebSocket integration | Android Studio Agent | Antigravity | **Planned** (Docs ready, no source) |
+| 5 | TASK-005 | History và local persistence | Android Studio Agent | Antigravity | **Planned** (Docs ready, no source) |
 | 6 | TASK-006 | Device connection và Settings | Android Studio Agent | Antigravity | Queued |
 | 7 | TASK-007 | Reverse Speech-to-Text | Android Studio Agent | Antigravity | Queued |
 | 8 | TASK-008 | Debug, model update UI và hardening | Android Studio Agent | Antigravity | Queued |

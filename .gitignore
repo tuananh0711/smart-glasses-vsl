@@ -14,20 +14,25 @@ temp_extract/
 *.zip
 
 # Các file model trọng số đã train (rất nặng)
-models/*.h5
-models/*.keras
+*.h5
+*.keras
 # Cho phép mô hình TFLite tối ưu hóa siêu nhẹ cho Raspberry Pi Edge AI (< 5MB)
 !models/*.tflite
+!test_1/models/*.tflite
 
 # Thư mục log của hệ thống
 logs/
+*.log
 __pycache__/
 *.pyc
 
-# Các file cấu hình của IDE
+# Các file cấu hình của IDE và Tool
 .vscode/
 .idea/
 .ipynb_checkpoints/
+.kilo/
+kaggle.json
+scripts/kaggle.json
 
 # File tạm thời của AI Assistant
 .gemini/
@@ -41,4 +46,5 @@ models/classes_fixed.json
 supermarket-dashboard/
 temp1.txt
 temp_docx.txt
+
 
